@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>milliama web - Global E-Learning Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 60px rgba(0,0,0,0.15);
+            --rwanda-blue: #00a1de;
+            --rwanda-yellow: #fad015;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen with Brand Ambassador */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading-image-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin-bottom: 2rem;
+        }
+
+        .loading-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255,255,255,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 30px 80px rgba(99,102,241,0.4);
+            }
+        }
+
+        .loading-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-ring:nth-child(2) {
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            border-top-color: var(--secondary);
+            animation-duration: 1.5s;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .loading-subtext {
+            color: rgba(255,255,255,0.8);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .loading-bar-container {
+            width: 300px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .loading-percentage {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .brand-ambassador-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: var(--gradient-1);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Student Registration Modal */
+        .registration-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 99998;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .registration-modal.active {
+            display: flex;
+        }
+
+        .registration-container {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.5s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .registration-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .registration-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .registration-header p {
+            color: var(--gray);
+        }
+
+        .registration-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #94a3b8;
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        .form-section {
+            margin-top: 1rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: start;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 0.2rem;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-group label {
+            font-size: 0.95rem;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+
+        .checkbox-group a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .submit-btn {
+            background: var(--gradient-1);
+            color: white;
+            padding: 1.2rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+        }
+
+        .close-registration {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-registration:hover {
+            color: var(--danger);
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .success-message.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 3rem;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .success-message h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .success-message p {
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        /* Brand Ambassador Section */
+        .ambassador-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: white;
+            padding: 5rem 5%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ambassador-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: rgba(99,102,241,0.1);
+            border-radius: 50%;
+        }
+
+        .ambassador-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ambassador-image-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .ambassador-image {
+            width: 400px;
+            height: 400px;
+            border-radius: 30px;
+            object-fit: cover;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            border: 5px solid rgba(255,255,255,0.2);
+            transform: rotate(-3deg);
+            transition: transform 0.3s;
+        }
+
+        .ambassador-image:hover {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        .ambassador-badge {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gradient-1);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .ambassador-content h2 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .ambassador-content h2 span {
+            color: var(--secondary);
+        }
+
+        .ambassador-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .ambassador-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .ambassador-stat {
+            text-align: center;
+        }
+
+        .ambassador-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .ambassador-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Country Selector Modal */
+        .country-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 99997;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .country-modal.active {
+            display: flex;
+        }
+
+        .country-container {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 900px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.5s ease;
+        }
+
+        .countries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .country-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #e2e8f0;
+            background: white;
+        }
+
+        .country-card:hover, .country-card.selected {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .flag {
+            width: 60px;
+            height: 40px;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            object-fit: cover;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-register {
+            background: var(--gradient-2);
+            color: white;
+            animation: pulse-btn 2s infinite;
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(236,72,153,0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(236,72,153,0); }
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 4rem 5%;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .hero-image-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .website-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-image {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rotating-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+            animation: rotateSlow 20s linear infinite;
+            box-shadow: var(--shadow-hover);
+            border: 5px solid white;
+        }
+
+        @keyframes rotateSlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .typing-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Curriculum Section */
+        .curriculum-section {
+            background: white;
+            padding: 5rem 5%;
+        }
+
+        .curriculum-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .curriculum-tab {
+            padding: 1rem 2rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .curriculum-tab.active, .curriculum-tab:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .curriculum-content {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .curriculum-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .subject-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .subject-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .subject-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .science { background: var(--gradient-1); }
+        .math { background: var(--gradient-2); }
+        .language { background: var(--gradient-3); }
+        .social { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .tech { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .art { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+        .subject-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .reb-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: var(--rwanda-blue);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .subject-topics {
+            list-style: none;
+        }
+
+        .subject-topics li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topic-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .topic-link:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Language Section */
+        .language-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5rem 5%;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .language-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .language-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-5px);
+        }
+
+        .language-flag {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .language-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Resources Section */
+        .resources-section {
+            background: #f1f5f9;
+            padding: 5rem 5%;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .resource-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .resource-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .youtube-icon { background: #ff0000; }
+        .freecodecamp-icon { background: #0a0a23; }
+        .coursera-icon { background: #0056d2; }
+        .khan-icon { background: #14bf96; }
+
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 1rem;
+            background: #f8fafc;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.3s;
+        }
+
+        .resource-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* External Section */
+        .external-section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 5rem 5%;
+        }
+
+        .external-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .external-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .external-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .external-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        .language-section .section-header h2,
+        .language-section .section-header p,
+        .external-section .section-header h2,
+        .external-section .section-header p {
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 5% 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #1e293b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid #1e293b;
+            color: #64748b;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--dark);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 100000;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .ambassador-container {
+                grid-template-columns: 1fr;
+            }
+
+            .ambassador-image {
+                width: 300px;
+                height: 300px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .loading-image-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            .loading-text {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen with Brand Ambassador -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-image-container">
+                <div class="loading-ring"></div>
+                <div class="loading-ring"></div>
+                <img src="m2.png" alt="mirriam.jflf" class="loading-image" id="loadingImage">
+                <div class="brand-ambassador-badge">
+                    <i class="fas fa-star"></i>
+                    Brand Ambassador
+                </div>
+            </div>
+            <div class="loading-text">milliama web</div>
+            <div class="loading-subtext">Loading your learning experience...</div>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+            <div class="loading-percentage" id="loadingPercentage">0%</div>
+        </div>
+    </div>
+
+    <!-- Student Registration Modal -->
+    <div class="registration-modal" id="registrationModal">
+        <div class="registration-container">
+            <button class="close-registration" onclick="closeRegistration()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="registration-form-container" id="registrationFormContainer">
+                <div class="registration-header">
+                    <h2><i class="fas fa-user-graduate"></i> Student Registration</h2>
+                    <p>Join milliama web for unlimited access to global education</p>
+                </div>
+                
+                <form class="registration-form" id="studentRegistrationForm" onsubmit="handleRegistration(event)">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-user"></i> Personal Information
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name <span class="required">*</span></label>
+                                <input type="text" name="firstName" placeholder="Enter your first name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name <span class="required">*</span></label>
+                                <input type="text" name="lastName" placeholder="Enter your last name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email Address <span class="required">*</span></label>
+                                <input type="email" name="email" placeholder="your@email.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number <span class="required">*</span></label>
+                                <input type="tel" name="phone" placeholder="+250 7XX XXX XXX" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date of Birth <span class="required">*</span></label>
+                                <input type="date" name="dob" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Gender <span class="required">*</span></label>
+                                <select name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                    <option value="prefer-not">Prefer not to say</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-map-marker-alt"></i> Address Information
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Country <span class="required">*</span></label>
+                                <select name="country" required onchange="updateCurriculum(this.value)">
+                                    <option value="">Select Country</option>
+                                    <option value="rwanda">Rwanda</option>
+                                    <option value="uganda">Uganda</option>
+                                    <option value="kenya">Kenya</option>
+                                    <option value="tanzania">Tanzania</option>
+                                    <option value="burundi">Burundi</option>
+                                    <option value="nigeria">Nigeria</option>
+                                    <option value="south-africa">South Africa</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>City/Province <span class="required">*</span></label>
+                                <input type="text" name="city" placeholder="Enter your city" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Full Address</label>
+                            <textarea name="address" rows="2" placeholder="Enter your full address"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Education Information -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-graduation-cap"></i> Education Information
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Current Education Level <span class="required">*</span></label>
+                                <select name="educationLevel" required>
+                                    <option value="">Select Level</option>
+                                    <option value="primary">Primary School</option>
+                                    <option value="secondary-o">Secondary School (O-Level)</option>
+                                    <option value="secondary-a">Secondary School (A-Level)</option>
+                                    <option value="university">University/College</option>
+                                    <option value="graduate">Graduate Studies</option>
+                                    <option value="professional">Professional</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>School/Institution Name</label>
+                                <input type="text" name="school" placeholder="Enter school name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Subjects of Interest <span class="required">*</span></label>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-top: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="interests" value="mathematics"> Mathematics
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="interests" value="physics"> Physics
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="interests" value="chemistry"> Chemistry
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="interests" value="biology"> Biology
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="interests" value="computer-science"> Computer Science
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="interests" value="languages"> Languages
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="interests" value="business"> Business
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" name="interests" value="arts"> Arts & Design
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Security -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-lock"></i> Account Security
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Password <span class="required">*</span></label>
+                                <input type="password" name="password" placeholder="Create password (min 8 characters)" minlength="8" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password <span class="required">*</span></label>
+                                <input type="password" name="confirmPassword" placeholder="Confirm your password" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a>. I consent to receiving educational materials and updates from milliama web. <span class="required">*</span></label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="newsletter" name="newsletter">
+                        <label for="newsletter">I want to receive newsletters about new courses, study tips, and educational opportunities.</label>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-user-plus"></i> Complete Registration
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3>Registration Successful!</h3>
+                <p>Welcome to milliama web! Your account has been created successfully. You now have unlimited access to all our educational resources.</p>
+                <button class="btn btn-primary" onclick="closeRegistration(); showToast('Welcome to milliama web!')">
+                    <i class="fas fa-rocket"></i> Start Learning
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Country Selector Modal -->
+    <div class="country-modal" id="countryModal">
+        <div class="country-container">
+            <div class="section-header">
+                <h2><i class="fas fa-globe"></i> Select Your Country</h2>
+                <p>Choose your country to access curriculum in your language</p>
+            </div>
+            <div class="countries-grid">
+                <div class="country-card" onclick="selectCountry('rwanda')">
+                    <img src="https://flagcdn.com/w80/rw.png" alt="Rwanda" class="flag">
+                    <div class="country-name">Rwanda</div>
+                </div>
+                <div class="country-card" onclick="selectCountry('uganda')">
+                    <img src="https://flagcdn.com/w80/ug.png" alt="Uganda" class="flag">
+                    <div class="country-name">Uganda</div>
+                </div>
+                <div class="country-card" onclick="selectCountry('kenya')">
+                    <img src="https://flagcdn.com/w80/ke.png" alt="Kenya" class="flag">
+                    <div class="country-name">Kenya</div>
+                </div>
+                <div class="country-card" onclick="selectCountry('tanzania')">
+                    <img src="https://flagcdn.com/w80/tz.png" alt="Tanzania" class="flag">
+                    <div class="country-name">Tanzania</div>
+                </div>
+                <div class="country-card" onclick="selectCountry('burundi')">
+                    <img src="https://flagcdn.com/w80/bi.png" alt="Burundi" class="flag">
+                    <div class="country-name">Burundi</div>
+                </div>
+                <div class="country-card" onclick="selectCountry('nigeria')">
+                    <img src="https://flagcdn.com/w80/ng.png" alt="Nigeria" class="flag">
+                    <div class="country-name">Nigeria</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                milliama web
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#ambassador">Ambassador</a></li>
+                <li><a href="#curriculum">Curriculum</a></li>
+                <li><a href="#languages">Languages</a></li>
+                <li><a href="#resources">Resources</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn btn-register" onclick="openRegistration()">
+                    <i class="fas fa-user-plus"></i> Register Now
+                </button>
+                <button class="btn btn-primary" onclick="openCountryModal()">
+                    <i class="fas fa-globe"></i> Country
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Learn Without Limits</h1>
+                <p>Join millions of students worldwide accessing free education. From REB curriculum to international standards, learn in your language at your pace.</p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-register" onclick="openRegistration()">
+                        <i class="fas fa-user-plus"></i> Register Free
+                    </button>
+                    <a href="#curriculum" class="btn btn-primary">
+                        <i class="fas fa-book-open"></i> Browse Courses
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">50K+</div>
+                        <div>Students</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1000+</div>
+                        <div>Courses</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div>Free</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-image-container">
+                <div class="website-name">milliama web</div>
+                <div class="hero-image">
+                    <img src="m2.jpg" alt="m2" class="rotating-image" onerror="this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop';this.onerror=null;">
+                </div>
+                <div class="typing-name">milliam</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Ambassador Section -->
+    <section class="ambassador-section" id="ambassador">
+        <div class="ambassador-container">
+            <div class="ambassador-image-container">
+                <img src="m2.png" alt="Brand Ambassador" class="ambassador-image">
+                <div class="ambassador-badge">
+                    <i class="fas fa-crown"></i>
+                    Brand Ambassador
+                </div>
+            </div>
+            
+            <div class="ambassador-content">
+                <h2>Meet Our <span>Brand Ambassador</span></h2>
+                <p>Representing excellence in education across Africa and beyond. Join our community of learners and unlock your potential with world-class resources tailored to your curriculum.</p>
+                
+                <div class="ambassador-stats">
+                    <div class="ambassador-stat">
+                        <div class="ambassador-stat-number">10K+</div>
+                        <div class="ambassador-stat-label">Students Helped</div>
+                    </div>
+                    <div class="ambassador-stat">
+                        <div class="ambassador-stat-number">50+</div>
+                        <div class="ambassador-stat-label">Countries</div>
+                    </div>
+                    <div class="ambassador-stat">
+                        <div class="ambassador-stat-number">98%</div>
+                        <div class="ambassador-stat-label">Success Rate</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="openRegistration()" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                    <i class="fas fa-rocket"></i> Join the Movement
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Curriculum Section -->
+    <section class="curriculum-section" id="curriculum">
+        <div class="section-header">
+            <h2>Choose Your Curriculum</h2>
+            <p>Select your national curriculum and start learning</p>
+        </div>
+        
+        <div class="curriculum-tabs">
+            <button class="curriculum-tab active" onclick="switchCurriculum('rwanda')">Rwanda (REB)</button>
+            <button class="curriculum-tab" onclick="switchCurriculum('uganda')">Uganda (UNEB)</button>
+            <button class="curriculum-tab" onclick="switchCurriculum('kenya')">Kenya (KCSE)</button>
+            <button class="curriculum-tab" onclick="switchCurriculum('tanzania')">Tanzania (NECTA)</button>
+        </div>
+
+        <!-- Rwanda Curriculum -->
+        <div class="curriculum-content active" id="rwanda-curriculum">
+            <div class="subjects-grid">
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div class="subject-icon math">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div>
+                            <div class="subject-title">Mathematics <span class="reb-badge">REB</span></div>
+                        </div>
+                    </div>
+                    <ul class="subject-topics">
+                        <li>
+                            <span>Algebra & Equations</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+mathematics+algebra" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Geometry & Trigonometry</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+geometry" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Calculus</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+calculus" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div class="subject-icon science">
+                            <i class="fas fa-atom"></i>
+                        </div>
+                        <div>
+                            <div class="subject-title">Physics <span class="reb-badge">REB</span></div>
+                        </div>
+                    </div>
+                    <ul class="subject-topics">
+                        <li>
+                            <span>Mechanics & Motion</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+physics+mechanics" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Electricity & Magnetism</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+electricity" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Modern Physics</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+modern+physics" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div class="subject-icon language">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div>
+                            <div class="subject-title">Kinyarwanda <span class="reb-badge">REB</span></div>
+                        </div>
+                    </div>
+                    <ul class="subject-topics">
+                        <li>
+                            <span>Imibare n'Imvugo</span>
+                            <a href="https://www.youtube.com/results?search_query=kinyarwanda+grammar" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Ibitekerezo n'Inyandiko</span>
+                            <a href="https://www.youtube.com/results?search_query=kinyarwanda+literature" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Amateka y'u Rwanda</span>
+                            <a href="https://www.youtube.com/results?search_query=amateka+yu+rwanda" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div class="subject-icon tech">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div>
+                            <div class="subject-title">Computer Science <span class="reb-badge">REB</span></div>
+                        </div>
+                    </div>
+                    <ul class="subject-topics">
+                        <li>
+                            <span>Programming Fundamentals</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+programming" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Database Management</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+database" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Web Development</span>
+                            <a href="https://www.youtube.com/results?search_query=rwanda+reb+web+development" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other curricula... (Uganda, Kenya, Tanzania) -->
+        <div class="curriculum-content" id="uganda-curriculum">
+            <div class="subjects-grid">
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div class="subject-icon math">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div>
+                            <div class="subject-title">Mathematics (UNEB)</div>
+                        </div>
+                    </div>
+                    <ul class="subject-topics">
+                        <li>
+                            <span>Pure Mathematics</span>
+                            <a href="https://www.youtube.com/results?search_query=uganda+uneb+mathematics" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Applied Mathematics</span>
+                            <a href="https://www.youtube.com/results?search_query=uganda+uneb+applied+math" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="curriculum-content" id="kenya-curriculum">
+            <div class="subjects-grid">
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div class="subject-icon math">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div>
+                            <div class="subject-title">Mathematics (KCSE)</div>
+                        </div>
+                    </div>
+                    <ul class="subject-topics">
+                        <li>
+                            <span>Algebra & Geometry</span>
+                            <a href="https://www.youtube.com/results?search_query=kenya+kcse+mathematics" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Calculus</span>
+                            <a href="https://www.youtube.com/results?search_query=kenya+kcse+calculus" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="curriculum-content" id="tanzania-curriculum">
+            <div class="subjects-grid">
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div class="subject-icon math">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div>
+                            <div class="subject-title">Mathematics (NECTA)</div>
+                        </div>
+                    </div>
+                    <ul class="subject-topics">
+                        <li>
+                            <span>Basic Mathematics</span>
+                            <a href="https://www.youtube.com/results?search_query=tanzania+necta+mathematics" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <span>Advanced Mathematics</span>
+                            <a href="https://www.youtube.com/results?search_query=tanzania+necta+advanced+math" target="_blank" class="topic-link">
+                                Learn <i class="fas fa-play-circle"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Language Section -->
+    <section class="language-section" id="languages">
+        <div class="section-header">
+            <h2>Learn Languages</h2>
+            <p>Master new languages with free resources</p>
+        </div>
+        
+        <div class="language-grid">
+            <a href="https://www.youtube.com/results?search_query=learn+english+free" target="_blank" class="language-card">
+                <div class="language-flag">🇬🇧</div>
+                <div class="language-name">English</div>
+                <div class="language-desc">Global business language</div>
+            </a>
+            
+            <a href="https://www.youtube.com/results?search_query=learn+french+free" target="_blank" class="language-card">
+                <div class="language-flag">🇫🇷</div>
+                <div class="language-name">Français</div>
+                <div class="language-desc">Diplomacy & culture</div>
+            </a>
+            
+            <a href="https://www.youtube.com/results?search_query=learn+kinyarwanda" target="_blank" class="language-card">
+                <div class="language-flag">🇷🇼</div>
+                <div class="language-name">Kinyarwanda</div>
+                <div class="language-desc">Language of Rwanda</div>
+            </a>
+            
+            <a href="https://www.youtube.com/results?search_query=learn+swahili+free" target="_blank" class="language-card">
+                <div class="language-flag">🇰🇪</div>
+                <div class="language-name">Kiswahili</div>
+                <div class="language-desc">East African lingua franca</div>
+            </a>
+            
+            <a href="https://www.youtube.com/results?search_query=learn+spanish+free" target="_blank" class="language-card">
+                <div class="language-flag">🇪🇸</div>
+                <div class="language-name">Español</div>
+                <div class="language-desc">2nd most spoken native</div>
+            </a>
+            
+            <a href="https://www.youtube.com/results?search_query=learn+german+free" target="_blank" class="language-card">
+                <div class="language-flag">🇩🇪</div>
+                <div class="language-name">Deutsch</div>
+                <div class="language-desc">Engineering & philosophy</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="resources-section" id="resources">
+        <div class="section-header">
+            <h2>Free Learning Platforms</h2>
+            <p>Access world-class education for free</p>
+        </div>
+        
+        <div class="resources-grid">
+            <div class="resource-card">
+                <div class="resource-header">
+                    <div class="resource-icon youtube-icon">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    <div>
+                        <div class="resource-title">YouTube Education</div>
+                    </div>
+                </div>
+                <p class="resource-desc">Millions of free tutorials in every language.</p>
+                <div class="resource-links">
+                    <a href="https://www.youtube.com/@freecodecamp/videos" target="_blank" class="resource-link">
+                        <span>freeCodeCamp</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@khanacademy/videos" target="_blank" class="resource-link">
+                        <span>Khan Academy</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-header">
+                    <div class="resource-icon freecodecamp-icon">
+                        <i class="fab fa-free-code-camp"></i>
+                    </div>
+                    <div>
+                        <div class="resource-title">freeCodeCamp</div>
+                    </div>
+                </div>
+                <p class="resource-desc">Free coding certifications.</p>
+                <div class="resource-links">
+                    <a href="https://www.freecodecamp.org/learn/" target="_blank" class="resource-link">
+                        <span>Full Curriculum</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-header">
+                    <div class="resource-icon coursera-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div>
+                        <div class="resource-title">Coursera</div>
+                    </div>
+                </div>
+                <p class="resource-desc">Audit courses from top universities.</p>
+                <div class="resource-links">
+                    <a href="https://www.coursera.org/courses?query=free" target="_blank" class="resource-link">
+                        <span>Free Courses</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-header">
+                    <div class="resource-icon khan-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div>
+                        <div class="resource-title">Khan Academy</div>
+                    </div>
+                </div>
+                <p class="resource-desc">Completely free K-12 education.</p>
+                <div class="resource-links">
+                    <a href="https://www.khanacademy.org/math" target="_blank" class="resource-link">
+                        <span>Mathematics</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- External Platforms Section -->
+    <section class="external-section" id="platforms">
+        <div class="section-header">
+            <h2>More Learning Platforms</h2>
+            <p>Expand your knowledge</p>
+        </div>
+        
+        <div class="external-grid">
+            <a href="https://www.edx.org/" target="_blank" class="external-card">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>edX</h3>
+                <p>Harvard, MIT, Berkeley</p>
+            </a>
+            
+            <a href="https://ocw.mit.edu/" target="_blank" class="external-card">
+                <i class="fas fa-university"></i>
+                <h3>MIT OpenCourseWare</h3>
+                <p>Free MIT courses</p>
+            </a>
+            
+            <a href="https://www.udacity.com/catalog/all/free-courses" target="_blank" class="external-card">
+                <i class="fas fa-rocket"></i>
+                <h3>Udacity</h3>
+                <p>Free tech courses</p>
+            </a>
+            
+            <a href="https://www.theodinproject.com/" target="_blank" class="external-card">
+                <i class="fas fa-crown"></i>
+                <h3>The Odin Project</h3>
+                <p>Full-stack web dev</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h3><i class="fas fa-graduation-cap"></i> milliama web</h3>
+                <p style="color: #94a3b8; margin-bottom: 1rem;">Global e-learning platform supporting REB, UNEB, KCSE, NECTA.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-free-code-camp"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#" onclick="openRegistration()">Student Registration</a></li>
+                    <li><a href="#curriculum">Browse Courses</a></li>
+                    <li><a href="#languages">Learn Languages</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> info@milliamaweb.com</li>
+                    <li><i class="fas fa-globe"></i> www.milliamaweb.com</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 milliama web. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Loading...</span>
+    </div>
+
+    <script>
+        // Loading Screen Animation
+        let loadingProgress = 0;
+        const loadingBar = document.getElementById('loadingBar');
+        const loadingPercentage = document.getElementById('loadingPercentage');
+        const loadingScreen = document.getElementById('loadingScreen');
+        
+        function updateLoading() {
+            if (loadingProgress < 100) {
+                loadingProgress += Math.random() * 15;
+                if (loadingProgress > 100) loadingProgress = 100;
+                
+                loadingBar.style.width = loadingProgress + '%';
+                loadingPercentage.textContent = Math.floor(loadingProgress) + '%';
+                
+                setTimeout(updateLoading, 200);
+            } else {
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                    // Show country selector after loading
+                    setTimeout(() => {
+                        document.getElementById('countryModal').classList.add('active');
+                    }, 500);
+                }, 500);
+            }
+        }
+        
+        // Start loading on page load
+        window.addEventListener('load', () => {
+            updateLoading();
+        });
+        
+        // Registration Functions
+        function openRegistration() {
+            document.getElementById('registrationModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeRegistration() {
+            document.getElementById('registrationModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            // Reset form
+            document.getElementById('registrationFormContainer').style.display = 'block';
+            document.getElementById('successMessage').classList.remove('active');
+            document.getElementById('studentRegistrationForm').reset();
+        }
+        
+        function handleRegistration(event) {
+            event.preventDefault();
+            
+            // Validate passwords match
+            const password = document.querySelector('input[name="password"]').value;
+            const confirmPassword = document.querySelector('input[name="confirmPassword"]').value;
+            
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match!');
+                return;
+            }
+            
+            // Simulate registration
+            setTimeout(() => {
+                document.getElementById('registrationFormContainer').style.display = 'none';
+                document.getElementById('successMessage').classList.add('active');
+            }, 1500);
+        }
+        
+        // Country Functions
+        function openCountryModal() {
+            document.getElementById('countryModal').classList.add('active');
+        }
+        
+        function selectCountry(country) {
+            showToast(`Welcome! Curriculum set to ${country.charAt(0).toUpperCase() + country.slice(1)}`);
+            document.getElementById('countryModal').classList.remove('active');
+            switchCurriculum(country);
+        }
+        
+        // Close country modal when clicking outside
+        document.getElementById('countryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+        
+        // Curriculum Switching
+        function switchCurriculum(country) {
+            document.querySelectorAll('.curriculum-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.curriculum-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            const selectedContent = document.getElementById(`${country}-curriculum`);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+            
+            document.querySelectorAll('.curriculum-tab').forEach(tab => {
+                if (tab.getAttribute('onclick').includes(country)) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+        
+        // Update curriculum based on registration country
+        function updateCurriculum(country) {
+            // Auto-select curriculum based on country
+            const curriculumMap = {
+                'rwanda': 'rwanda',
+                'uganda': 'uganda',
+                'kenya': 'kenya',
+                'tanzania': 'tanzania',
+                'burundi': 'rwanda'
+            };
+            
+            const curriculum = curriculumMap[country];
+            if (curriculum) {
+                // Will update after registration
+                console.log('Will switch to:', curriculum);
+            }
+        }
+        
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toast.className = 'toast show';
+            toastMessage.textContent = message;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Close registration modal when clicking outside
+        document.getElementById('registrationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRegistration();
+            }
+        });
+        
+        // Terms and Privacy (placeholder functions)
+        function showTerms() {
+            showToast('Terms of Service - Coming Soon');
+        }
+        
+        function showPrivacy() {
+            showToast('Privacy Policy - Coming Soon');
+        }
+    </script>
+</body>
+</html>
